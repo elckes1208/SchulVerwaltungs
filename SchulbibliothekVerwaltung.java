@@ -31,17 +31,19 @@ public class SchulbibliothekVerwaltung {
 
 
         Buch b1 = anlegenBuch("923-123-456", "Grundkurs Java", "Dietmar Abts");
+        Buch b2 = anlegenBuch("923-123-445","Grundkurs JS","Elias Roth");
+        Buch b3 = anlegenBuch("923-123-334","Grundkurs Python","Elias Paul");
         Exemplar exemplar = new Exemplar(b1);
         aufnehmenExemplar(b1);
-        aufnehmenExemplar(b1);
-        aufnehmenExemplar(b1);
+        aufnehmenExemplar(b2);
+        aufnehmenExemplar(b3);
 
-        //Ausleihe a1 = ausleihenBuch(exemplar, sucheLeser(0, leser.size(), 12));
-        //a1.getAusleihDat().setDate(20, 11, 2016);
+        Ausleihe a1 = ausleihenBuch(exemplar, sucheLeser(0, leser.size(), 12));
+        a1.getAusleihDat().setDate(20, 11, 2016);
 
-        //rueckgebenBuch(a1);
-        //Ausleihe a2 = ausleihenBuch(sucheNichtAusgeliehenesExemplar(b1), sucheLeser(0,leser.size(),47));
-        //Ausleihe a3 = ausleihenBuch(sucheNichtAusgeliehenesExemplar(b1), sucheLeser(0,leser.size(),18));
+        rueckgebenBuch(a1);
+        Ausleihe a2 = ausleihenBuch(exemplar,registrierenLeser(47, "LÖWE", "Robin"));
+        Ausleihe a3 = ausleihenBuch(exemplar, sucheLeser(0,leser.size(),18));
     }
     // Anfang Methoden
 
@@ -68,18 +70,18 @@ public class SchulbibliothekVerwaltung {
      * @param leserNr des Leser-Objekts als Ganzzahl
      * @return Leser-Objekt oder null, wenn nicht gefunden
      */
-//    public Leser sucheLeser(int start, int ende, int leserNr) {
-//        ende = leser.size() - 1;
-//
-//        if (start <= ende) {
-//            int mitte = start + (ende - start) / 2;
-//
-//            if (leser.get(mitte).getLeserNr() == leserNr) return leser.get(mitte);
-//            if (leser.get(mitte).getLeserNr() < leserNr) return sucheLeser(start, mitte-1, leserNr);
-//            else return sucheLeser(mitte + 1, ende, leserNr);
-//        }
-//        return null;
-//    }
+    public Leser sucheLeser(int start, int ende, int leserNr) {
+        ende = leser.size() - 1;
+
+        while (start <= ende){
+            int m = (start+ende)/2;
+
+            if(leserNr == leser.get(m).getLeserNr()) return leser.get(m);
+            else if(leserNr < leser.get(m).getLeserNr()) ende = m - 1;
+            else start = m + 1;
+        }
+        return null;
+    }
 
 
     /**
@@ -165,6 +167,11 @@ public class SchulbibliothekVerwaltung {
      * @return Exemplar-Objekt oder null, wenn keins vorhanden
      */
     public Exemplar sucheNichtAusgeliehenesExemplar(Buch buch) {
+        for (int i = 0; i < buecher.size()-1; i++) {
+            if(ausleihen.get(i) == null)
+                System.out.println("Buch wurde nicht ausgeliehen!");
+            return new Exemplar(buch);
+        }
         return null;
     }
 
@@ -177,7 +184,7 @@ public class SchulbibliothekVerwaltung {
      * @return neues Ausleihe-Objekt
      */
     public Ausleihe ausleihenBuch(Exemplar ex, Leser leser) {
-        Ausleihe ausleiheObjekt = new Ausleihe(ex, leser);
+        Ausleihe ausleiheObjekt = new Ausleihe(ex,leser);
         ausleihen.add(ausleiheObjekt);
         return ausleiheObjekt;
     }
@@ -213,8 +220,9 @@ public class SchulbibliothekVerwaltung {
     public ArrayList<Ausleihe> sucheOffeneAusleihen() {
         ArrayList<Ausleihe> ausleiheArrayList = new ArrayList<>();
 
-        for (Ausleihe al : ausleihen) {
-            if (getMaxAusleihDauer() == 12) ausleiheArrayList.add(al);
+        for (int i = 0; i < ausleihen.size()-1; i++) {
+            if(getMaxAusleihDauer() == 12)
+                ausleiheArrayList.add(ausleihen.get(i));
         }
         return ausleiheArrayList;
     }
